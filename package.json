@@ -1,0 +1,16 @@
+{
+  "name": "rubikcube",
+  "version": "0.1.0",
+  "description": "Rubik's cube scanner and solver",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
