@@ -39,9 +39,10 @@ This serves the app at http://localhost:5173 (it opens automatically). You shoul
 
 ```
 src/
-  components/   Reusable UI (AppShell, NavBar, PlaceholderView)
-  views/        Route-level screens (Landing, Scan, Solve, Tutorial, NotFound)
-  lib/          Non-UI logic adapters (scanner, solver) — placeholders
+  components/   Reusable UI (AppShell, NavBar, CameraView, FaceColorGrid, …)
+  views/        Route-level screens (Landing, Scan, Review, Solve, Tutorial, NotFound)
+  hooks/        React hooks (useCamera)
+  lib/          Non-UI logic (capture, color, colorDetect; scanner/solver — placeholders)
   state/        App state & cube domain model (CubeState, AppStateContext)
   App.tsx       Route definitions
   main.tsx      App entry point (router + state provider)
@@ -50,15 +51,36 @@ src/
 
 ## Planned views
 
-- **Scan** — capture each cube face via the camera and detect sticker colors.
+- **Scan** — capture each cube face via the camera.
+- **Review** — inspect the detected sticker colors as an editable 3×3 grid per
+  face, with per-sticker confidence, and correct any misclassification.
 - **Solve** — compute a solution and step through it on an interactive 3D cube.
 - **Tutorial** — learn notation and the beginner's layer-by-layer method.
+
+## Sticker color detection
+
+`src/lib/colorDetect.ts` turns the raw sampled sticker RGB from the camera step
+into one of the six cube colors per sticker, plus a 54-sticker color array
+(`stickerColors` on the app state).
+
+Rather than hard-coded RGB thresholds — which break the moment the camera's
+white-balance or the room's lighting shifts — it classifies each sticker
+_relative to the capture itself_:
+
+1. The six center stickers are, by construction, the six colors (one of each).
+   They give six clean reference swatches taken under the same lighting we're
+   classifying against.
+2. Those centers are labeled by a global bijective assignment (each color used
+   once), so labeling depends on the colors' relative ordering around the hue
+   wheel, not absolute hues a white-balance shift would move.
+3. Every sticker is then matched to the nearest labeled reference by perceptual
+   CIELAB ΔE. Confidence comes from the margin to the runner-up, so ambiguous
+   stickers (classically red vs. orange) surface as low-confidence for review.
 
 ## Roadmap / next steps
 
 The following are intentionally stubbed and throw if called:
 
-- `src/lib/scanner.ts` — `detectFace()` (camera color detection)
 - `src/lib/solver.ts` — `solve()` (cubejs integration)
 
-Wire these up alongside their respective views to bring the skeleton to life.
+The `Solve` view consumes the 54-sticker color array from the app state.

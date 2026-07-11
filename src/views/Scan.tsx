@@ -130,9 +130,9 @@ export default function Scan() {
           {complete ? (
             <div className="scan__complete">
               <h2 className="scan__step-title">All faces captured 🎉</h2>
-              <p>Every face is ready for color detection.</p>
-              <Link to="/solve" className="button button--primary">
-                Continue to solve
+              <p>Every face is ready. Review the detected colors and fix any that look off.</p>
+              <Link to="/review" className="button button--primary">
+                Review colors
               </Link>
               <button type="button" className="button button--ghost" onClick={handleReset}>
                 Start over
